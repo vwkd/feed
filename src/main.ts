@@ -32,6 +32,16 @@ export class Feed {
   }
 
   /**
+   * Check if item is in feed
+   *
+   * @param itemId ID of feed item
+   * @returns `true` if item is in feed, `false` otherwise
+   */
+  has(itemId: string): boolean {
+    return this.#items.some(({ id }) => id === itemId);
+  }
+
+  /**
    * Add items to feed
    *
    * - first will be at top of feed, last at bottom
