@@ -20,6 +20,17 @@ export class Feed {
   constructor(info: FeedInfo) {
     this.#info = info;
   }
+
+  /**
+   * Get item from feed
+   *
+   * @param itemId ID of feed item
+   * @returns item or undefined if not found
+   */
+  get(itemId: string): Item | undefined {
+    return this.#items.find(({ id }) => id === itemId);
+  }
+
   /**
    * Add items to feed
    *
