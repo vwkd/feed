@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { Feed } from "../src/main.ts";
 
 const VERSION = "https://jsonfeed.org/version/1.1";
@@ -36,9 +36,57 @@ Deno.test("one", () => {
   assertEquals(
     feed.toJSON(),
     JSON.stringify({
-      version: "https://jsonfeed.org/version/1.1",
+      version: VERSION,
       ...INFO,
       items: [ITEM1],
+    }),
+  );
+});
+
+Deno.test("two", () => {
+  const feed = new Feed(INFO);
+
+  feed.add(ITEM1);
+  feed.add(ITEM2);
+
+  assertEquals(
+    feed.toJSON(),
+    JSON.stringify({
+      version: VERSION,
+      ...INFO,
+      items: [ITEM1, ITEM2],
+    }),
+  );
+});
+
+Deno.test("two single call", () => {
+  const feed = new Feed(INFO);
+
+  feed.add(ITEM1, ITEM2);
+
+  assertEquals(
+    feed.toJSON(),
+    JSON.stringify({
+      version: VERSION,
+      ...INFO,
+      items: [ITEM1, ITEM2],
+    }),
+  );
+});
+
+Deno.test("three", () => {
+  const feed = new Feed(INFO);
+
+  feed.add(ITEM1);
+  feed.add(ITEM2);
+  feed.add(ITEM3);
+
+  assertEquals(
+    feed.toJSON(),
+    JSON.stringify({
+      version: VERSION,
+      ...INFO,
+      items: [ITEM1, ITEM2, ITEM3],
     }),
   );
 });
@@ -54,6 +102,40 @@ Deno.test("three single call", () => {
       version: VERSION,
       ...INFO,
       items: [ITEM1, ITEM2, ITEM3],
+    }),
+  );
+});
+
+Deno.test("duplicate", () => {
+  const feed = new Feed(INFO);
+  feed.add(ITEM1);
+
+  assertThrows(
+    () => feed.add(ITEM1),
+    `Item with ID '1' is already in feed`,
+  );
+});
+
+Deno.test("duplicate single call", () => {
+  const feed = new Feed(INFO);
+
+  assertThrows(
+    () => feed.add(ITEM1, ITEM1),
+    `Item with ID '1' is already in feed`,
+  );
+});
+
+Deno.test("none", () => {
+  const feed = new Feed(INFO);
+
+  feed.add();
+
+  assertEquals(
+    feed.toJSON(),
+    JSON.stringify({
+      version: VERSION,
+      ...INFO,
+      items: [],
     }),
   );
 });
