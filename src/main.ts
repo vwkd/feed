@@ -62,6 +62,15 @@ export class Feed {
   }
 
   /**
+   * Remove item from feed
+   *
+   * @param itemId ID of feed item
+   */
+  remove(itemId: string): void {
+    this.#items = this.#items.filter(({ id }) => id !== itemId);
+  }
+
+  /**
    * Serialize feed
    *
    * @returns JSON of feed
