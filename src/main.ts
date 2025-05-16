@@ -10,7 +10,7 @@ export class Feed {
   /** Information of the feed */
   #info: FeedInfo;
   /** Items of the feed */
-  #items: Item[] = [];
+  #items: Map<string, Item> = new Map();
 
   /**
    * Create new JSON Feed
@@ -28,7 +28,7 @@ export class Feed {
    * @returns item or undefined if not found
    */
   get(itemId: string): Item | undefined {
-    return this.#items.find(({ id }) => id === itemId);
+    return this.#items.get(itemId);
   }
 
   /**
@@ -38,7 +38,7 @@ export class Feed {
    * @returns `true` if item is in feed, `false` otherwise
    */
   has(itemId: string): boolean {
-    return this.#items.some(({ id }) => id === itemId);
+    return this.#items.has(itemId);
   }
 
   /**
@@ -53,11 +53,11 @@ export class Feed {
     for (const item of items) {
       const itemId = item.id;
 
-      if (this.#items.some(({ id }) => id === itemId)) {
+      if (this.#items.has(itemId)) {
         throw new Error(`Item with ID '${itemId}' is already in feed`);
       }
 
-      this.#items.push(item);
+      this.#items.set(itemId, item);
     }
   }
 
@@ -65,9 +65,10 @@ export class Feed {
    * Remove item from feed
    *
    * @param itemId ID of feed item
+   * @returns `true` if item existed and has been removed, `false` if item doesn't exist
    */
-  remove(itemId: string): void {
-    this.#items = this.#items.filter(({ id }) => id !== itemId);
+  remove(itemId: string): boolean {
+    return this.#items.delete(itemId);
   }
 
   /**
@@ -79,7 +80,7 @@ export class Feed {
     return JSON.stringify({
       version: this.#version,
       ...this.#info,
-      items: this.#items,
+      items: Array.from(this.#items.values()),
     });
   }
 }
